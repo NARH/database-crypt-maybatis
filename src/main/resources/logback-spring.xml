@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+  <property name="logFileName" value="boardstyle.jp" />
+  <property name="logFilePath" value="./logs/" />
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.out</target>
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logFilePath}${logFileName}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${logFilePath}${logFileName}-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+      <maxHistory>3</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="default">
+    <logger name="org.springframework.web"          level="INFO"/>
+    <logger name="org.springframework.security"     level="INFO"/>
+    <logger name="org.mybatis"                      level="TRACE"/>
+    <logger name="com.github.narh.boardstyle.site"  level="TRACE"/>
+
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+  <springProfile name="test">
+    <logger name="org.springframework.web"          level="INFO"/>
+    <logger name="org.springframework.security"     level="INFO"/>
+    <logger name="org.mybatis"                      level="DEBUG"/>
+    <logger name="com.github.narh.boardstyle.site"  level="DEBUG"/>
+
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+  <springProfile name="stg">
+    <logger name="org.springframework.web"          level="INFO"/>
+    <logger name="org.springframework.security"     level="INFO"/>
+    <logger name="org.mybatis"                      level="INFO"/>
+    <logger name="com.github.narh.boardstyle.site"  level="INFO"/>
+
+    <root level="INFO">
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+  <springProfile name="prod">
+    <logger name="org.springframework.web"          level="WARN"/>
+    <logger name="org.springframework.security"     level="WARN"/>
+    <logger name="org.mybatis"                      level="WARN"/>
+    <logger name="com.github.narh.boardstyle.site"  level="TRACE"/>
+
+    <root level="WARN">
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+
+</configuration>

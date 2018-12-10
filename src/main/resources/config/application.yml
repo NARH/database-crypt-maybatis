@@ -1,0 +1,43 @@
+server:
+  servlet:
+    session:
+      timeout: 3600
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  resources:
+    static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, classpath:/templates/static/ 
+  mvc:
+    static-path-pattern: /static/**
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  messages:
+    basename: i18n/messages
+    fallback-to-system-locale: false
+    use-code-as-default-message: true
+    
+mybatis:
+  type-handlers-package: com.github.narh.example001.mybatis.domain.type
+  config-location: classpath:mybatis/mybatis-config.xml
+ 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  config: classpath:logback-spring.xml
+
+application:
+  crypt:
+    passphrase: "hogehogefoobar1"
