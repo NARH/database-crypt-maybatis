@@ -27,24 +27,29 @@
 
 package com.github.narh.example001.mybatis;
 
+import java.nio.charset.Charset;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import lombok.Data;
 
 /**
  * @author narita
  *
  */
-@Data
-public class ApplicationConfigRegistory {
+@ConfigurationProperties(prefix="application") @Data
+public class ApplicationContext {
 
-  private static ApplicationConfigRegistory _instance;
+  private Crypt crypt = new Crypt();
 
-  private ApplicationConfig config;
+  @Data
+  public static class Crypt {
+    private Charset charset = Charset.forName("UTF-8");
+    private String passphrase;
 
-  public static ApplicationConfigRegistory getInstance()   {
-    if(null == _instance) _instance = new ApplicationConfigRegistory();
-    return _instance;
+    public void setCharset(final String charset) {
+      this.charset = Charset.forName(charset);
+    }
   }
 
-  private ApplicationConfigRegistory() {
-  }
 }

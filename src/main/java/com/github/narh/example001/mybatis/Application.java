@@ -30,6 +30,7 @@ package com.github.narh.example001.mybatis;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,5 +51,12 @@ public class Application {
   public static void main(String... args) {
     if(log.isTraceEnabled()) log.trace("== アプリケーションを起動します ==");
     SpringApplication.run(Application.class, args);
+  }
+  
+  @Bean
+  public ApplicationContext applicationContext() {
+    ApplicationContext context = new ApplicationContext();
+    ApplicationContextRegistory.getInstance().setConfig(context);
+    return context;
   }
 }

@@ -48,10 +48,10 @@
     insert into MEMBER_MASTER(ID, NAME, KANA, POSTAL_CODE, ADDRESS)
     values(
       #{id}
-     ,#{name,       typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=VARBINARY}
-     ,#{kana,       typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=VARBINARY}
-     ,#{postalCode, typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=VARBINARY}
-     ,#{address,    typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=VARBINARY})
+     ,#{name,       typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=BINARY}
+     ,#{kana,       typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=BINARY}
+     ,#{postalCode, typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=BINARY}
+     ,#{address,    typeHandler=com.github.narh.example001.mybatis.domain.type.CryptTypeHandler,jdbcType=BINARY})
   </insert>
   <update id="update" parameterType="Member">
     update MEMBER_MASTER set

@@ -30,6 +30,7 @@ package com.github.narh.example001.mybatis.util;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class CryptUtilTest {
     byte[] cryptGraph = CryptUtils.encrypt(message, passphrase);
     log.info("== length({})", cryptGraph.length);
     log.info(Base64.getEncoder().encodeToString(cryptGraph));
-    String encryptGraph = CryptUtils.decrypt(cryptGraph, passphrase);
+    String encryptGraph = CryptUtils.decrypt(cryptGraph, StandardCharsets.UTF_8, passphrase);
     assertThat("複合化文字列が暗号化前文字列と同じであること", message, is(encryptGraph));
   }
 }

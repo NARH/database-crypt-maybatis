@@ -27,6 +27,7 @@
 
 package com.github.narh.example001.mybatis.util;
 
+import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -40,6 +41,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author narita
  *
@@ -49,11 +52,15 @@ public class CryptUtils {
   static MessageDigest messageDigest;
 
   public static byte[] encrypt(final String message, final String passphrase) {
-    return getGraph(message.getBytes(), passphrase, Cipher.ENCRYPT_MODE);
+    return (StringUtils.isNotEmpty(passphrase))
+      ? getGraph(message.getBytes(), passphrase, Cipher.ENCRYPT_MODE)
+      : message.getBytes();
   }
 
-  public static String decrypt(final byte[] message, final String passphrase) {
-    return new String(getGraph(message, passphrase, Cipher.DECRYPT_MODE));
+  public static String decrypt(final byte[] message, final Charset charset, final String passphrase) {
+    return (StringUtils.isNotEmpty(passphrase))
+      ? new String(getGraph(message, passphrase, Cipher.DECRYPT_MODE), charset)
+      : new String(message, charset);
   }
 
   private static MessageDigest getMessageDigest() throws NoSuchAlgorithmException {

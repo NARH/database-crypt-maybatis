@@ -27,29 +27,24 @@
 
 package com.github.narh.example001.mybatis;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import lombok.Data;
 
 /**
  * @author narita
  *
  */
-@ConfigurationProperties(prefix="application")
 @Data
-public class ApplicationConfig {
+public class ApplicationContextRegistory {
 
-  private Crypt crypt = new Crypt();
+  private static ApplicationContextRegistory _instance;
 
-  @Data
-  public static class Crypt {
-    private String passphrase;
+  private ApplicationContext config;
+
+  public static ApplicationContextRegistory getInstance()   {
+    if(null == _instance) _instance = new ApplicationContextRegistory();
+    return _instance;
   }
 
-  @PostConstruct
-  public void postConstruct() {
-    ApplicationConfigRegistory.getInstance().setConfig(this);
+  private ApplicationContextRegistory() {
   }
 }

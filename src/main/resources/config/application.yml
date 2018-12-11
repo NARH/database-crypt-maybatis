@@ -40,4 +40,5 @@ logging:
 
 application:
   crypt:
+    charset: UTF-8
     passphrase: "hogehogefoobar1"

@@ -27,6 +27,7 @@
 
 package com.github.narh.example001.mybatis.domain.type;
 
+import java.nio.charset.Charset;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,7 +38,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.springframework.stereotype.Component;
 
-import com.github.narh.example001.mybatis.ApplicationConfigRegistory;
+import com.github.narh.example001.mybatis.ApplicationContextRegistory;
 import com.github.narh.example001.mybatis.util.CryptUtils;
 
 import lombok.Setter;
@@ -56,7 +57,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(ResultSet rs, String columnName) throws SQLException {
     try {
       return (null == rs.getBytes(columnName)) ? null
-          : new String(CryptUtils.decrypt(rs.getBytes(columnName), getPassphrase()));
+          : new String(CryptUtils.decrypt(rs.getBytes(columnName), getCharset(), getPassphrase()));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -70,7 +71,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
     try {
       return (null == rs.getBytes(columnIndex)) ? null
-          : new String(CryptUtils.decrypt(rs.getBytes(columnIndex), getPassphrase()));
+          : new String(CryptUtils.decrypt(rs.getBytes(columnIndex), getCharset(), getPassphrase()));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -84,7 +85,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
     try {
       return (null == cs.getBytes(columnIndex)) ? null
-          : new String(CryptUtils.decrypt(cs.getBytes(columnIndex), getPassphrase()));
+          : new String(CryptUtils.decrypt(cs.getBytes(columnIndex), getCharset(), getPassphrase()));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -104,7 +105,11 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
     }
   }
 
+  private Charset getCharset() {
+    return ApplicationContextRegistory.getInstance().getConfig().getCrypt().getCharset();
+  }
+
   private String getPassphrase() {
-    return ApplicationConfigRegistory.getInstance().getConfig().getCrypt().getPassphrase();
+    return ApplicationContextRegistory.getInstance().getConfig().getCrypt().getPassphrase();
   }
 }
