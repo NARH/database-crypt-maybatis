@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author narita
  *
  */
-public class AES256CryptAdapter implements CryptAdapter {
+public class AES256CryptCommand implements CryptCommand {
 
   static final String HASH_ALGORITHM = "SHA-256";
   static final String KEY_ENCODING   = "AES";

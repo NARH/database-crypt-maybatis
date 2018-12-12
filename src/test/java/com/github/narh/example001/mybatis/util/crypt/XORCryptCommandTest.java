@@ -27,13 +27,31 @@
 
 package com.github.narh.example001.mybatis.util.crypt;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
+import java.nio.charset.StandardCharsets;
+
+import org.junit.Test;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author narita
  *
  */
-public interface CryptAdapter {
+@Slf4j
+public class XORCryptCommandTest {
 
-  public byte[] encrypt(final byte[] src, final String passphrase);
-
-  public byte[] decrypt(final byte[] src, final String passphrase);
+  @Test
+  public void test暗号化と複合化() throws Exception{
+    String src = "これはてすと";
+    String passphrase = "hogeHOGEfugaFuga";
+    log.info("<=== {}", new String(src.getBytes(), StandardCharsets.UTF_8));
+    CryptCommand crypter = new XORCryptCommand();
+    byte[] encryptData = crypter.encrypt(src.getBytes(StandardCharsets.UTF_8), passphrase);
+    String decryptStr  = new String(crypter.decrypt(encryptData, passphrase));
+    assertThat("複合化文字列が暗号化対象文字列と同じであること", decryptStr, is(src));
+    log.info("===> {}", decryptStr);
+  }
 }

@@ -41,14 +41,14 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class XORCryptAdapterTest {
+public class AES256CryptCommandTest {
 
   @Test
   public void test暗号化と複合化() throws Exception{
     String src = "これはてすと";
     String passphrase = "hogeHOGEfugaFuga";
     log.info("<=== {}", new String(src.getBytes(), StandardCharsets.UTF_8));
-    CryptAdapter crypter = new XORCryptAdapter();
+    CryptCommand crypter = new AES256CryptCommand();
     byte[] encryptData = crypter.encrypt(src.getBytes(StandardCharsets.UTF_8), passphrase);
     String decryptStr  = new String(crypter.decrypt(encryptData, passphrase));
     assertThat("複合化文字列が暗号化対象文字列と同じであること", decryptStr, is(src));

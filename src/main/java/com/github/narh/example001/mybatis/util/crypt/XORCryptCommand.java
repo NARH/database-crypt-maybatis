@@ -31,7 +31,7 @@ package com.github.narh.example001.mybatis.util.crypt;
  * @author narita
  *
  */
-public class XORCryptAdapter implements CryptAdapter {
+public class XORCryptCommand implements CryptCommand {
 
   /* (非 Javadoc)
    * @see com.github.narh.example001.mybatis.util.crypt.CryptAdapter#encrypt(java.lang.String, java.nio.charset.Charset, java.lang.String)
