@@ -36,16 +36,27 @@ import java.util.List;
  */
 public class Decrypter implements CryptExecutor {
 
+  private final byte[] src;
   private List<CryptCommand> commands  = new ArrayList<>();
 
+  /**
+   *
+   */
+  public Decrypter(final byte[] src) {
+    this.src = src;
+  }
   public void add(CryptCommand command) {
     commands.add(command);
   }
 
-  public byte[] execute(final byte[] src, final String passphrase) {
+  public byte[] execute() {
+    return execute(src);
+  }
+
+  private byte[] execute(final byte[] src) {
     byte[] dest = src;
     for(CryptCommand command:commands)
-      dest = command.decrypt(dest, passphrase);
+      dest = command.decrypt(dest);
     return dest;
   }
 }

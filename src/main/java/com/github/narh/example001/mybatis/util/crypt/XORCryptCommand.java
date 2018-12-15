@@ -31,29 +31,37 @@ package com.github.narh.example001.mybatis.util.crypt;
  * @author narita
  *
  */
-public class XORCryptCommand implements CryptCommand {
+public class XORCryptCommand extends AbstractCryptCommand implements CryptCommand {
+
+  public XORCryptCommand(final String passphrase) {
+    setPassphrase(passphrase);
+  }
 
   /* (非 Javadoc)
    * @see com.github.narh.example001.mybatis.util.crypt.CryptAdapter#encrypt(java.lang.String, java.nio.charset.Charset, java.lang.String)
    */
   @Override
-  public byte[] encrypt(byte[] src, String passphrase) {
-    return encode(src, passphrase.getBytes());
+  public byte[] encrypt(final byte[] src) {
+    return (null == src || 0 == src.length
+        || null == getPassphrase() || 0 == getPassphrase().length)
+        ? src : encode(src);
   }
 
   /* (非 Javadoc)
    * @see com.github.narh.example001.mybatis.util.crypt.CryptAdapter#decrypt(byte[], java.nio.charset.Charset, java.lang.String)
    */
   @Override
-  public byte[] decrypt(byte[] src, String passphrase) {
-    return encode(src, passphrase.getBytes());
+  public byte[] decrypt(final byte[] src) {
+    return (null == src || 0 == src.length
+        || null == getPassphrase() || 0 == getPassphrase().length)
+        ? src : encode(src);
   }
 
-  private static byte[] encode(byte[] src, byte[] passphrase) {
+  private byte[] encode(final byte[] src) {
     byte[] encode = new byte[src.length];
 
     for(int i = 0; i < src.length; i++)
-      encode[i] = (byte)(src[i]^passphrase[i%passphrase.length]);
+      encode[i] = (byte)(src[i]^getPassphrase()[i%getPassphrase().length]);
 
     return encode;
   }

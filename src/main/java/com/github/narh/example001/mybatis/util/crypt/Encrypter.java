@@ -36,16 +36,37 @@ import java.util.List;
  */
 public class Encrypter implements CryptExecutor {
 
-  private List<CryptCommand> commands  = new ArrayList<>();
+  final byte[] src;
 
-  public void add(CryptCommand command) {
-    commands.add(command);
+  /**
+   *
+   */
+  public Encrypter(final byte[] src) {
+    this.src = src;
   }
 
-  public byte[] execute(final byte[] src, final String passphrase) {
+  private List<CryptCommand> commands  = new ArrayList<>();
+
+  private byte[] execute(final byte[] src) {
     byte[] dest = src;
     for(CryptCommand command:commands)
-      dest = command.encrypt(dest, passphrase);
+      dest = command.encrypt(dest);
     return dest;
+  }
+
+  /* (非 Javadoc)
+   * @see com.github.narh.example001.mybatis.util.crypt.CryptExecutor#execute()
+   */
+  @Override
+  public byte[] execute() {
+    return execute(src);
+  }
+
+  /* (非 Javadoc)
+   * @see com.github.narh.example001.mybatis.util.crypt.CryptExecutor#add(com.github.narh.example001.mybatis.util.crypt.CryptCommand)
+   */
+  @Override
+  public void add(CryptCommand command) {
+    this.commands.add(command);
   }
 }

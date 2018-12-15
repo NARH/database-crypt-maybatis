@@ -33,7 +33,8 @@ package com.github.narh.example001.mybatis.util.crypt;
  */
 public interface CryptCommand {
 
-  public byte[] encrypt(final byte[] src, final String passphrase);
+  public byte[] encrypt(final byte[] src);
 
-  public byte[] decrypt(final byte[] src, final String passphrase);
+  public byte[] decrypt(final byte[] src);
+
 }

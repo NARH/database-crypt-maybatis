@@ -35,5 +35,5 @@ public interface CryptExecutor {
 
   public void add(CryptCommand command);
 
-  public byte[] execute(final byte[] src, final String passphrase);
+  public byte[] execute();
 }

@@ -47,10 +47,13 @@ public class AES256CryptCommandTest {
   public void test暗号化と複合化() throws Exception{
     String src = "これはてすと";
     String passphrase = "hogeHOGEfugaFuga";
+    String iv = "0987fooBar123_%$";
     log.info("<=== {}", new String(src.getBytes(), StandardCharsets.UTF_8));
-    CryptCommand crypter = new AES256CryptCommand();
-    byte[] encryptData = crypter.encrypt(src.getBytes(StandardCharsets.UTF_8), passphrase);
-    String decryptStr  = new String(crypter.decrypt(encryptData, passphrase));
+    CryptCommand encrypter = new AES256CryptCommand(passphrase, iv);
+    byte[] encryptData = encrypter.encrypt(src.getBytes(StandardCharsets.UTF_8));
+    assertThat("暗号化されていること", encryptData, is(not(src.getBytes(StandardCharsets.UTF_8))));
+    CryptCommand decrypter = new AES256CryptCommand(passphrase, iv);
+    String decryptStr  = new String(decrypter.decrypt(encryptData));
     assertThat("複合化文字列が暗号化対象文字列と同じであること", decryptStr, is(src));
     log.info("===> {}", decryptStr);
   }

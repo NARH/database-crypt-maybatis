@@ -45,22 +45,25 @@ public class EncrypterTest {
 
   @Test
   public void testAES256ToXOR() throws Exception {
-    String src = "テスト文字列";
+    String src = "テスト文字列\nテスト文字列";
     String passphrase = "hogehogeFugafugaFooBar123";
+    String iv = "1234!\"#$AbCdX==";
 
-    Encrypter encrypter = new Encrypter();
-    AES256CryptCommand aes256CryptCommand = new AES256CryptCommand();
-    XORCryptCommand xorCryptCommand = new XORCryptCommand();
+    Encrypter encrypter = new Encrypter(src.getBytes(StandardCharsets.UTF_8));
+    AES256CryptCommand aes256CryptCommand = new AES256CryptCommand(passphrase, iv);
+    XORCryptCommand xorCryptCommand = new XORCryptCommand(passphrase);
 
     log.info("<=== {}", src);
     encrypter.add(aes256CryptCommand);
     encrypter.add(xorCryptCommand);
-    byte[] encryptGraph = encrypter.execute(src.getBytes(StandardCharsets.UTF_8), passphrase);
+    byte[] encryptGraph = encrypter.execute();
+    log.info("graph length = {}", encryptGraph.length);
 
-    Decrypter decrypter = new Decrypter();
+    Decrypter decrypter = new Decrypter(encryptGraph);
     decrypter.add(xorCryptCommand);
     decrypter.add(aes256CryptCommand);
-    byte[] decryptGraph = decrypter.execute(encryptGraph, passphrase);
+    byte[] decryptGraph = decrypter.execute();
+    log.info("graph length = {}", decryptGraph.length);
     log.info("===> {}",new String(decryptGraph, StandardCharsets.UTF_8));
     assertThat("元の文字列であること", new String(decryptGraph, StandardCharsets.UTF_8), is(src));
   }

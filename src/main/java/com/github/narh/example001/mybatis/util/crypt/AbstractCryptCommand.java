@@ -27,33 +27,41 @@
 
 package com.github.narh.example001.mybatis.util.crypt;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
-
-import java.nio.charset.StandardCharsets;
-
-import org.junit.Test;
-
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author narita
  *
  */
-@Slf4j
-public class XORCryptCommandTest {
+public abstract class AbstractCryptCommand implements CryptCommand {
 
-  @Test
-  public void test暗号化と複合化() throws Exception{
-    String src = "これはてすと";
-    String passphrase = "hogeHOGEfugaFuga";
-    log.info("<=== {}", new String(src.getBytes(), StandardCharsets.UTF_8));
-    CryptCommand crypter = new XORCryptCommand(passphrase);
-    byte[] encryptData = crypter.encrypt(src.getBytes(StandardCharsets.UTF_8));
+  private String passphrase;
 
-    CryptCommand decrypter = new XORCryptCommand(passphrase);
-    String decryptStr  = new String(decrypter.decrypt(encryptData));
-    assertThat("複合化文字列が暗号化対象文字列と同じであること", decryptStr, is(src));
-    log.info("===> {}", decryptStr);
+  private String iv;
+
+  /* (非 Javadoc)
+   * @see com.github.narh.example001.mybatis.util.crypt.CryptCommand#encrypt(byte[], java.lang.String)
+   */
+  @Override
+  abstract public byte[] encrypt(final byte[] src);
+
+  /* (非 Javadoc)
+   * @see com.github.narh.example001.mybatis.util.crypt.CryptCommand#decrypt(byte[], java.lang.String)
+   */
+  @Override
+  abstract public byte[] decrypt(final byte[] src);
+
+  protected void setPassphrase(String passphrase) {
+    this.passphrase = passphrase;
+  }
+
+  protected void setInitializationVector(String iv) {
+    this.iv = iv;
+  }
+
+  protected byte[] getPassphrase() {
+    return passphrase.getBytes();
+  }
+
+  protected byte[] getInitializationVector() {
+    return iv.getBytes();
   }
 }

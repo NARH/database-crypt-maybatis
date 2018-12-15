@@ -40,36 +40,51 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * @author narita
  *
  */
-public class AES256CryptCommand implements CryptCommand {
+public class AES256CryptCommand extends AbstractCryptCommand implements CryptCommand {
 
   static final String HASH_ALGORITHM = "SHA-256";
   static final String KEY_ENCODING   = "AES";
   static final String ENCODING_MODE  = "AES/CBC/PKCS5PADDING";
+  static final int PASSPHRASE_LENGTH = 32;
+  static final int IV_LENGTH         = 16;
 
   static MessageDigest messageDigest;
+
+  final boolean USE_MESSAGE_DIGEST;
+
+  public AES256CryptCommand(final String passphrase, final String iv) {
+    this(passphrase, iv, false);
+  }
+
+  public AES256CryptCommand(final String passphrase, final String iv
+      , final boolean useMessageDigest) {
+    USE_MESSAGE_DIGEST = useMessageDigest;
+    setPassphrase(passphrase);
+    setInitializationVector(iv);
+  }
 
   /* (非 Javadoc)
    * @see com.github.narh.example001.mybatis.util.crypt.CryptAdapter#encrypt(byte[], java.lang.String)
    */
   @Override
-  public byte[] encrypt(byte[] src, String passphrase) {
-    return (null == src || 0 == src.length || StringUtils.isEmpty(passphrase))
-        ? src : getGraph(src, passphrase, Cipher.ENCRYPT_MODE);
+  public byte[] encrypt(final byte[] src) {
+    return (null == src || 0 == src.length
+        || null == getPassphrase() || 0 == getPassphrase().length)
+        ? src : getGraph(src, Cipher.ENCRYPT_MODE);
   }
 
   /* (非 Javadoc)
    * @see com.github.narh.example001.mybatis.util.crypt.CryptAdapter#decrypt(byte[], java.lang.String)
    */
   @Override
-  public byte[] decrypt(byte[] src, String passphrase) {
-    return (null == src || 0 == src.length || StringUtils.isEmpty(passphrase))
-        ? src : getGraph(src, passphrase, Cipher.DECRYPT_MODE);
+  public byte[] decrypt(final byte[] src) {
+    return (null == src || 0 == src.length
+        || null == getPassphrase() || 0 == getPassphrase().length)
+        ? src : getGraph(src, Cipher.DECRYPT_MODE);
   }
 
   private static MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
@@ -81,11 +96,10 @@ public class AES256CryptCommand implements CryptCommand {
     return Cipher.getInstance(ENCODING_MODE);
   }
 
-  private static byte[] getGraph(final byte[] src, final String passphrase, final int mode) {
+  private byte[] getGraph(final byte[] src, final int mode) {
     try {
-      byte[] key                      = getKey(passphrase);
       Cipher cipher                   = getCipher();
-      cipher.init(mode, getSecretKeySpec(key), getIvParameterSpec(key));
+      cipher.init(mode, getSecretKeySpec(), getIvParameterSpec());
       return cipher.doFinal(src);
     }
     catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
@@ -94,17 +108,19 @@ public class AES256CryptCommand implements CryptCommand {
     }
   }
 
-  private static byte[] getKey(final String passphrase) throws NoSuchAlgorithmException {
-    if(null == passphrase) throw new IllegalArgumentException("Passphrase is null");
-    byte[] key = getMessageDigest().digest(passphrase.getBytes());
-    return Arrays.copyOf(key, 32);
+  private byte[] getKey() throws NoSuchAlgorithmException {
+    if(null == getPassphrase()) throw new IllegalArgumentException("Passphrase is null");
+    byte[] key = getMessageDigest().digest(getPassphrase());
+    return Arrays.copyOf(key, PASSPHRASE_LENGTH);
   }
 
-  private static SecretKeySpec getSecretKeySpec(final byte[] key) {
+  private SecretKeySpec getSecretKeySpec() throws NoSuchAlgorithmException {
+    byte[] key = (USE_MESSAGE_DIGEST)
+        ? getKey() : Arrays.copyOf(getPassphrase(), PASSPHRASE_LENGTH);
     return new SecretKeySpec(key, KEY_ENCODING);
   }
 
-  private static IvParameterSpec getIvParameterSpec(final byte[] key) {
-    return new IvParameterSpec(Arrays.copyOf(key, 16));
+  private IvParameterSpec getIvParameterSpec() {
+    return new IvParameterSpec(Arrays.copyOf(getInitializationVector(), IV_LENGTH));
   }
 }

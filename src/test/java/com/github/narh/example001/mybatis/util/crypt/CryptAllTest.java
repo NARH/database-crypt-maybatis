@@ -27,33 +27,22 @@
 
 package com.github.narh.example001.mybatis.util.crypt;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
-
-import java.nio.charset.StandardCharsets;
-
-import org.junit.Test;
-
-import lombok.extern.slf4j.Slf4j;
+import junit.framework.JUnit4TestAdapter;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * @author narita
  *
  */
-@Slf4j
-public class XORCryptCommandTest {
+public class CryptAllTest extends TestCase {
 
-  @Test
-  public void test暗号化と複合化() throws Exception{
-    String src = "これはてすと";
-    String passphrase = "hogeHOGEfugaFuga";
-    log.info("<=== {}", new String(src.getBytes(), StandardCharsets.UTF_8));
-    CryptCommand crypter = new XORCryptCommand(passphrase);
-    byte[] encryptData = crypter.encrypt(src.getBytes(StandardCharsets.UTF_8));
-
-    CryptCommand decrypter = new XORCryptCommand(passphrase);
-    String decryptStr  = new String(decrypter.decrypt(encryptData));
-    assertThat("複合化文字列が暗号化対象文字列と同じであること", decryptStr, is(src));
-    log.info("===> {}", decryptStr);
+  public static Test suite() {
+    TestSuite suite = new TestSuite();
+    suite.addTest(new JUnit4TestAdapter(AES256CryptCommandTest.class));
+    suite.addTest(new JUnit4TestAdapter(XORCryptCommandTest.class));
+    suite.addTest(new JUnit4TestAdapter(EncrypterTest.class));
+    return suite;
   }
 }
