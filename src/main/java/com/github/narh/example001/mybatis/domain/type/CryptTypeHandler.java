@@ -27,7 +27,6 @@
 
 package com.github.narh.example001.mybatis.domain.type;
 
-import java.nio.charset.Charset;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +37,6 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.springframework.stereotype.Component;
 
-import com.github.narh.example001.mybatis.ApplicationContextRegistory;
 import com.github.narh.example001.mybatis.util.CryptUtils;
 
 import lombok.Setter;
@@ -103,9 +101,5 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
     }
-  }
-
-  private Charset getCharset() {
-    return ApplicationContextRegistory.getInstance().getConfig().getCrypt().getCharset();
   }
 }
