@@ -52,7 +52,7 @@ public class Application {
     if(log.isTraceEnabled()) log.trace("== アプリケーションを起動します ==");
     SpringApplication.run(Application.class, args);
   }
-  
+
   @Bean
   public ApplicationContext applicationContext() {
     ApplicationContext context = new ApplicationContext();

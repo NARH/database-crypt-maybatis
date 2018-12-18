@@ -57,7 +57,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(ResultSet rs, String columnName) throws SQLException {
     try {
       return (null == rs.getBytes(columnName)) ? null
-          : new String(CryptUtils.decrypt(rs.getBytes(columnName), getCharset(), getPassphrase()));
+          : CryptUtils.decrypt(rs.getBytes(columnName));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -71,7 +71,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
     try {
       return (null == rs.getBytes(columnIndex)) ? null
-          : new String(CryptUtils.decrypt(rs.getBytes(columnIndex), getCharset(), getPassphrase()));
+          : CryptUtils.decrypt(rs.getBytes(columnIndex));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -85,7 +85,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   public String getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
     try {
       return (null == cs.getBytes(columnIndex)) ? null
-          : new String(CryptUtils.decrypt(cs.getBytes(columnIndex), getCharset(), getPassphrase()));
+          : CryptUtils.decrypt(cs.getBytes(columnIndex));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -98,7 +98,7 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
   @Override
   public void setNonNullParameter(PreparedStatement ps, int index, String parameter, JdbcType jdbcType) throws SQLException {
     try {
-      ps.setBytes(index, CryptUtils.encrypt(parameter, getPassphrase()));
+      ps.setBytes(index, CryptUtils.encrypt(parameter));
     }
     catch(IllegalArgumentException e) {
       throw new SQLException(e);
@@ -107,9 +107,5 @@ public class CryptTypeHandler extends BaseTypeHandler<String>{
 
   private Charset getCharset() {
     return ApplicationContextRegistory.getInstance().getConfig().getCrypt().getCharset();
-  }
-
-  private String getPassphrase() {
-    return ApplicationContextRegistory.getInstance().getConfig().getCrypt().getPassphrase();
   }
 }

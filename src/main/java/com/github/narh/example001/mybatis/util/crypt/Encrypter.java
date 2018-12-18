@@ -30,13 +30,19 @@ package com.github.narh.example001.mybatis.util.crypt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Hex;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author narita
  *
  */
+@Slf4j
 public class Encrypter implements CryptExecutor {
 
   final byte[] src;
+  private List<CryptCommand> commands  = new ArrayList<>();
 
   /**
    *
@@ -45,12 +51,14 @@ public class Encrypter implements CryptExecutor {
     this.src = src;
   }
 
-  private List<CryptCommand> commands  = new ArrayList<>();
-
   private byte[] execute(final byte[] src) {
     byte[] dest = src;
-    for(CryptCommand command:commands)
+    for(CryptCommand command:commands) {
+      if(log.isTraceEnabled()) log.trace("--> encrypt {}", command.getClass().getName());
+      if(log.isTraceEnabled()) log.trace("--> encrypt before {}", Hex.encodeHexString(dest));
       dest = command.encrypt(dest);
+      if(log.isTraceEnabled()) log.trace("--> encrypt after {}", Hex.encodeHexString(dest));
+    }
     return dest;
   }
 
@@ -68,5 +76,6 @@ public class Encrypter implements CryptExecutor {
   @Override
   public void add(CryptCommand command) {
     this.commands.add(command);
+    if(log.isTraceEnabled()) log.trace("---> order:{}", command);
   }
 }

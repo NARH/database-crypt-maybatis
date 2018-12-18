@@ -27,77 +27,79 @@
 
 package com.github.narh.example001.mybatis.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.github.narh.example001.mybatis.ApplicationContextRegistory;
+import com.github.narh.example001.mybatis.util.crypt.CryptType;
+import com.github.narh.example001.mybatis.util.crypt.Decrypter;
+import com.github.narh.example001.mybatis.util.crypt.Encrypter;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author narita
  *
  */
+@Slf4j
 public class CryptUtils {
 
   static MessageDigest messageDigest;
 
-  public static byte[] encrypt(final String message, final String passphrase) {
-    return (StringUtils.isNotEmpty(passphrase))
-      ? getGraph(message.getBytes(), passphrase, Cipher.ENCRYPT_MODE)
-      : message.getBytes();
+  public static byte[] encrypt(final String message) {
+    Charset charset = ApplicationContextRegistory.getInstance().getConfig().getCrypt().getCharset();
+    return (StringUtils.isNotEmpty(message))
+      ? getEncrypter(message.getBytes(charset)).execute()
+      : message.getBytes(charset);
   }
 
-  public static String decrypt(final byte[] message, final Charset charset, final String passphrase) {
-    return (StringUtils.isNotEmpty(passphrase))
-      ? new String(getGraph(message, passphrase, Cipher.DECRYPT_MODE), charset)
+  public static String decrypt(final byte[] message) {
+    Charset charset = ApplicationContextRegistory.getInstance().getConfig().getCrypt().getCharset();
+    return (null != message && 0 < message.length)
+      ? new String(getDecrypt(message).execute(), charset)
       : new String(message, charset);
   }
 
-  private static MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
-    if(null == messageDigest) messageDigest = MessageDigest.getInstance("SHA-256");
-    return messageDigest;
+  public static Encrypter getEncrypter(final byte[] src) {
+    Encrypter encrypter = new Encrypter(src);
+    if(log.isTraceEnabled()) log.trace("encrypt order:{}", ApplicationContextRegistory.getInstance().getConfig().getCrypt());
+    ApplicationContextRegistory.getInstance().getConfig().getCrypt().getOrder()
+      .entrySet().stream().sorted(java.util.Map.Entry.comparingByKey())
+      .forEach(c->{
+        try {
+          encrypter.add(CryptType.valueOf(c.getValue()).getCommand(
+              ApplicationContextRegistory.getInstance().getConfig().getCrypt().getPassphrase()
+            , ApplicationContextRegistory.getInstance().getConfig().getCrypt().getIv()));
+        }
+        catch (
+            InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+            | NoSuchMethodException | SecurityException e) {
+          throw new RuntimeException(e);
+    }});
+    return encrypter;
   }
 
-  private static Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
-    return Cipher.getInstance("AES/CBC/PKCS5PADDING");
-  }
-
-  private static byte[] getGraph(final byte[] message, final String passphrase, final int mode) {
-    try {
-      byte[] key = getKey(passphrase);
-      SecretKeySpec secretKeySpec = getSecretKeySpec(key);
-      IvParameterSpec ivParameterSpec = getIvParameterSpec(key);
-      Cipher cipher = getCipher();
-      cipher.init(mode, secretKeySpec, ivParameterSpec);
-      return cipher.doFinal(message);
-    }
-    catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-        | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  private static byte[] getKey(final String passphrase) throws NoSuchAlgorithmException {
-    if(null == passphrase) throw new IllegalArgumentException("Passphrase is null");
-    byte[] key = getMessageDigest().digest(passphrase.getBytes());
-    return Arrays.copyOf(key, 32);
-  }
-
-  private static SecretKeySpec getSecretKeySpec(final byte[] key) {
-    return new SecretKeySpec(key, "AES");
-  }
-
-  private static IvParameterSpec getIvParameterSpec(final byte[] key) {
-    return new IvParameterSpec(Arrays.copyOf(key, 16));
+  public static Decrypter getDecrypt(final byte[] src) {
+    Decrypter decrypter = new Decrypter(src);
+    if(log.isTraceEnabled()) log.trace("decrypt order:{}", ApplicationContextRegistory.getInstance().getConfig().getCrypt());
+    ApplicationContextRegistory.getInstance().getConfig().getCrypt().getOrder()
+      .entrySet().stream().sorted(Collections.reverseOrder(java.util.Map.Entry.comparingByKey()))
+      .forEach(c->{
+        try {
+          decrypter.add(CryptType.valueOf(c.getValue()).getCommand(
+              ApplicationContextRegistory.getInstance().getConfig().getCrypt().getPassphrase()
+            , ApplicationContextRegistory.getInstance().getConfig().getCrypt().getIv()));
+        }
+        catch (
+          InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+          | NoSuchMethodException | SecurityException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    return decrypter;
   }
 }

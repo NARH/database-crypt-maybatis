@@ -28,6 +28,7 @@
 package com.github.narh.example001.mybatis;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -44,8 +45,10 @@ public class ApplicationContext {
 
   @Data
   public static class Crypt {
+    private Map<Integer, String> order;
     private Charset charset = Charset.forName("UTF-8");
     private String passphrase;
+    private String iv;
 
     public void setCharset(final String charset) {
       this.charset = Charset.forName(charset);

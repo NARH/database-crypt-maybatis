@@ -30,10 +30,12 @@ package com.github.narh.example001.mybatis.util;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,17 +43,16 @@ import lombok.extern.slf4j.Slf4j;
  * @author narita
  *
  */
-@Slf4j
+@Slf4j @RunWith(SpringRunner.class) @MybatisTest
 public class CryptUtilTest {
 
   @Test
   public void testAES256Crypt() throws Exception {
-    String passphrase = "foobarfoobarFOOBAR012345#$!";
     String message    = "hogehogeoHOGEHOGEFUGAFUGA0987654321!#%&あいうえお";
-    byte[] cryptGraph = CryptUtils.encrypt(message, passphrase);
+    byte[] cryptGraph = CryptUtils.encrypt(message);
     log.info("== length({})", cryptGraph.length);
     log.info(Base64.getEncoder().encodeToString(cryptGraph));
-    String encryptGraph = CryptUtils.decrypt(cryptGraph, StandardCharsets.UTF_8, passphrase);
+    String encryptGraph = CryptUtils.decrypt(cryptGraph);
     assertThat("複合化文字列が暗号化前文字列と同じであること", message, is(encryptGraph));
   }
 }

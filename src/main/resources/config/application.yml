@@ -40,5 +40,9 @@ logging:
 
 application:
   crypt:
+    order:
+      "[1]": "AES256"
+      "[2]": "XOR"
     charset: UTF-8
     passphrase: "hogehogefoobar1"
+    iv: "$fooBAR123_$_123"

@@ -25,47 +25,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.github.narh.example001.mybatis.domain.mapper;
+package com.github.narh.example001.mybatis.util.crypt;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.github.narh.example001.mybatis.domain.entity.MemberEntity;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author narita
  *
  */
-@RunWith(SpringRunner.class) @MybatisTest
-public class MemberMapperTest {
+public enum CryptType {
+  XOR(XORCryptCommand.class), AES256(AES256CryptCommand.class);
 
-  @Autowired
-  private MemberMapper memberMapper;
+  private Class<? extends CryptCommand> cls;
 
-  @Test
-  public void  findAllTest() throws Exception {
-    MemberEntity member = new MemberEntity();
-    member.setId("0000001");
-    member.setName("山田太郎");
-    member.setKana("ヤマダタロウ");
-    member.setPostalCode("120-1234");
-    member.setAddress("東京都新宿区新宿");
-    memberMapper.insert(member);
-
-    List<MemberEntity> members = memberMapper.findAll();
-    assertThat("件数が1件であること", members.size(), is(1));
-    assertThat("名前が一致すること",  members.get(0).getName(), is(member.getName()));
-    assertThat("カナが一致すること",  members.get(0).getKana(), is(member.getKana()));
-    assertThat("郵便番号が一致すること",  members.get(0).getPostalCode(), is(member.getPostalCode()));
-    assertThat("住所が一致すること",  members.get(0).getAddress(), is(member.getAddress()));
+  private CryptType(final Class<? extends CryptCommand> cls) {
+    this.cls = cls;
   }
 
+  public CryptCommand getCommand(final String passphrase, final String iv)
+      throws InstantiationException, IllegalAccessException
+      , IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    try {
+      CryptCommand command = cls.getConstructor(String.class, String.class).newInstance(passphrase,iv);
+      return command;
+    } catch (NoSuchMethodException e) {
+      CryptCommand command = cls.getConstructor(String.class).newInstance(passphrase);
+      return command;
+    }
+  }
 }

@@ -27,10 +27,15 @@
 
 package com.github.narh.example001.mybatis.util.crypt;
 
+import org.apache.commons.codec.binary.Hex;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author narita
  *
  */
+@Slf4j
 public class XORCryptCommand extends AbstractCryptCommand implements CryptCommand {
 
   public XORCryptCommand(final String passphrase) {
@@ -42,6 +47,7 @@ public class XORCryptCommand extends AbstractCryptCommand implements CryptComman
    */
   @Override
   public byte[] encrypt(final byte[] src) {
+    if(log.isDebugEnabled()) log.debug("XOR do encrypt... {}", Hex.encodeHexString(src));
     return (null == src || 0 == src.length
         || null == getPassphrase() || 0 == getPassphrase().length)
         ? src : encode(src);
@@ -52,6 +58,7 @@ public class XORCryptCommand extends AbstractCryptCommand implements CryptComman
    */
   @Override
   public byte[] decrypt(final byte[] src) {
+    if(log.isDebugEnabled()) log.debug("XOR do decrypt... {}", Hex.encodeHexString(src));
     return (null == src || 0 == src.length
         || null == getPassphrase() || 0 == getPassphrase().length)
         ? src : encode(src);
@@ -59,9 +66,11 @@ public class XORCryptCommand extends AbstractCryptCommand implements CryptComman
 
   private byte[] encode(final byte[] src) {
     byte[] encode = new byte[src.length];
-
+    byte[] passphrase = getPassphrase();
+    if(log.isTraceEnabled())
+      log.trace("===> XOR src:{}, pathphrase {}",Hex.encodeHexString(src), Hex.encodeHexString(passphrase));
     for(int i = 0; i < src.length; i++)
-      encode[i] = (byte)(src[i]^getPassphrase()[i%getPassphrase().length]);
+      encode[i] = (byte)(src[i]^passphrase[i%passphrase.length]);
 
     return encode;
   }

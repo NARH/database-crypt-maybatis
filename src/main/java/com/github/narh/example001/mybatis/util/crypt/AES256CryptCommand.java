@@ -40,10 +40,15 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.binary.Hex;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author narita
  *
  */
+@Slf4j
 public class AES256CryptCommand extends AbstractCryptCommand implements CryptCommand {
 
   static final String HASH_ALGORITHM = "SHA-256";
@@ -52,7 +57,7 @@ public class AES256CryptCommand extends AbstractCryptCommand implements CryptCom
   static final int PASSPHRASE_LENGTH = 32;
   static final int IV_LENGTH         = 16;
 
-  static MessageDigest messageDigest;
+  MessageDigest messageDigest;
 
   final boolean USE_MESSAGE_DIGEST;
 
@@ -72,6 +77,7 @@ public class AES256CryptCommand extends AbstractCryptCommand implements CryptCom
    */
   @Override
   public byte[] encrypt(final byte[] src) {
+    if(log.isDebugEnabled()) log.debug("AES256 do encrypt... {}", Hex.encodeHexString(src));
     return (null == src || 0 == src.length
         || null == getPassphrase() || 0 == getPassphrase().length)
         ? src : getGraph(src, Cipher.ENCRYPT_MODE);
@@ -82,17 +88,19 @@ public class AES256CryptCommand extends AbstractCryptCommand implements CryptCom
    */
   @Override
   public byte[] decrypt(final byte[] src) {
+    if(log.isDebugEnabled()) log.debug("AES256 do decrypt... {}", Hex.encodeHex(src));
     return (null == src || 0 == src.length
-        || null == getPassphrase() || 0 == getPassphrase().length)
+        || null == getPassphrase() || 0 == getPassphrase().length
+        || null == getInitializationVector() || 0 == getInitializationVector().length)
         ? src : getGraph(src, Cipher.DECRYPT_MODE);
   }
 
-  private static MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
+  private MessageDigest getMessageDigest() throws NoSuchAlgorithmException {
     if(null == messageDigest) messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
     return messageDigest;
   }
 
-  private static Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
+  private Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
     return Cipher.getInstance(ENCODING_MODE);
   }
 
@@ -100,6 +108,8 @@ public class AES256CryptCommand extends AbstractCryptCommand implements CryptCom
     try {
       Cipher cipher                   = getCipher();
       cipher.init(mode, getSecretKeySpec(), getIvParameterSpec());
+      if(log.isDebugEnabled())
+        log.debug("===> AES256 passphrase:{}, iv:{}", new String(getPassphrase()), new String(getInitializationVector()));
       return cipher.doFinal(src);
     }
     catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
