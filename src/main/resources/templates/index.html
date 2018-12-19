@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
-  <body>
+  <body class="bg-light">
     <div class="container">
-      <p>hoge</p>
+      <div class="col-md-12 order-md-2 mb-4">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">一覧</span>
+            <span class="badge badge-secondary badge-pill" th:text="${list.size()}">3</span>
+          </h4>
+          <ul class="list-group mb-3" th:each="row : ${list}">
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0" th:text="${row.name}">テスト 太郎</h6>
+                <small class="text-muted" th:text="${row.kana}">テスト　タロウ</small>
+              </div>
+              <span class="text-muted"i th:text="${row.postalCode}+${row.address}">〒225-0013 神奈川県横浜市</span>
+            </li>
+          </ul>
+
+          <form class="card p-2" method="post" action="/">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="テスト 太郎" name="name">
+              <input type="text" class="form-control" placeholder="225-0013" name="postalCode">
+            </div>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="テスト タロウ" name="kana">
+              <input type="text" class="form-control" placeholder="神奈川県横浜市" name="address">
+            </div>
+            <hr class="mb-4">
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+            </hr>
+          </form>
+        </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function() {
+        'use strict';
+
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+              form.submit();
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
   </body>
 </html>

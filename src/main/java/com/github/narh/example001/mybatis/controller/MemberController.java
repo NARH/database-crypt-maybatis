@@ -27,24 +27,40 @@
 
 package com.github.narh.example001.mybatis.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.github.narh.example001.mybatis.domain.entity.MemberEntity;
 import com.github.narh.example001.mybatis.domain.mapper.MemberMapper;
 
 /**
  * @author narita
  *
  */
-@Controller
+@Controller @RequestMapping({"/", "/index.html"})
 public class MemberController {
 
   @Autowired
   private MemberMapper memberMapper;
 
-  @RequestMapping({"/", "/index.html"})
-  public String showIndexPage() throws Exception {
+
+  @GetMapping
+  public String showIndexPage(Model model) throws Exception {
+    model.addAttribute("list", memberMapper.findAll());
+    return "index";
+  }
+
+  @PostMapping
+  public String registData(MemberEntity form, Model model) throws Exception {
+    form.setId(UUID.randomUUID().toString());
+    memberMapper.insert(form);
+    model.addAttribute("list", memberMapper.findAll());
     return "index";
   }
 }
