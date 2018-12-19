@@ -9,7 +9,7 @@
   <body class="bg-light">
     <div class="container">
       <div class="col-md-12 order-md-2 mb-4">
-          <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="d-flex justify-content-between align-items-center mb-3" th:if="${list.size()}">
             <span class="text-muted">一覧</span>
             <span class="badge badge-secondary badge-pill" th:text="${list.size()}">3</span>
           </h4>
@@ -23,6 +23,9 @@
             </li>
           </ul>
 
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">登録</span>
+          </h4>
           <form class="card p-2" method="post" action="/">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="テスト 太郎" name="name">
