@@ -25,11 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.github.narh.example001.mybatis;
+package com.github.narh.example001.mybatis.controller;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 
 /**
  * @author narita
@@ -37,11 +38,8 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-    com.github.narh.example001.mybatis.util.crypt.TestSuite.class
-  , com.github.narh.example001.mybatis.util.TestSuite.class
-  , com.github.narh.example001.mybatis.domain.mapper.TestSuite.class
-  , com.github.narh.example001.mybatis.controller.TestSuite.class
-})
+  MemberControllerTest.class
+}) @MybatisTest
 public class TestSuite {
 
 }
